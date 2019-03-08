@@ -1,0 +1,25 @@
+{
+  "name": "microservice.user",
+  "version": "1.0.0",
+  "description": "User micro-service",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon bin/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Zaharia Laurentiu Jr Marius",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.4",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "joi": "^14.3.1",
+    "jsonwebtoken": "^8.5.0",
+    "mongoose": "^5.4.13",
+    "morgan": "^1.9.1",
+    "nodemailer": "^5.1.1",
+    "nodemon": "^1.18.10",
+    "passport-local": "^1.0.0",
+    "smtp-server": "^3.5.0"
+  }
+}
