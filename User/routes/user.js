@@ -1,21 +1,25 @@
 const router = require('express').Router();
 const controller = require('../controllers/user');
-const joiValidation = require('../middleware/joiValidation');
+const bodyValidation = require('../middleware/bodyValidation');
 const joiSchemas = require('../utils/joiSchemas');
-
-router.use(function timeLog(req, res, next) {
-  console.log('Time: ', Date.now());
-  next();
-});
+const auth = require('../middleware/auth');
 
 router
   .route('/:user_id')
-  .get(controller.getUserById)
-  .put(joiValidation.validate(joiSchemas.userUpdateSchema), controller.updateUserById)
-  .patch(joiValidation.validate(joiSchemas.userPatchPassword), controller.patchUserPwd);
+  .get(auth, controller.getUserById)
+  .put(bodyValidation.validate(joiSchemas.userUpdate), controller.updateUserById)
+  .patch(bodyValidation.validate(joiSchemas.userPatchPwd), controller.patchUserPwd);
 
 router
   .route('/signup')
-  .post(joiValidation.validate(joiSchemas.userSignupSchema), controller.signupUser);
+  .post(bodyValidation.validate(joiSchemas.userSignup), controller.signupUser);
+
+router
+  .route('/activate/:user_token')
+  .get(controller.activateUser);
+
+router
+  .route('/activate/:user_id')
+  .patch(controller.refreshActivationToken);
 
 module.exports = router;

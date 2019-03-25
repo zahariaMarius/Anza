@@ -10,9 +10,16 @@
   "author": "Zaharia Laurentiu Jr Marius",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^3.0.4",
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "mongoose": "^5.4.13",
+    "jsonwebtoken": "^8.5.0",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.23",
+    "mongoose": "^5.4.19",
     "morgan": "^1.9.1",
-    "nodemon": "^1.18.10"
+    "nodemon": "^1.18.10",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0"
   }
 }

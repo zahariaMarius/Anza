@@ -1,7 +1,7 @@
 /**
  * Module dependencies.
  */
-const conf = require('./configuration/conf').mongodbConf;
+const conf = require('./conf/conf').mongodbConf;
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
@@ -23,7 +23,7 @@ mongoose.connect('mongodb://' + conf.address + ':' + conf.port +  '/userservice'
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', '*');
-  res.header('X-Powered-By', 'Node.js');
+  res.header('X-Powered-By', 'Express');
   res.header('X-Version', '1.0.0');
   if (req.method === 'OPTIONS') {
     res.header('Access-Control-Allow-Headers', '*');
@@ -44,11 +44,6 @@ app.use(logger('dev'));
  * Set app use Routes
  */
 app.use('/user', userRoutes);
-
-app.use((err, req, res, next) => {
-  console.log('jjjahHH');
-  next();
-});
 
 /**
  * Export Module dependencies.

@@ -3,11 +3,13 @@
  */
 const app = require('../app');
 const http = require('http');
+const moment = require('moment');
+const tz = require('moment-timezone');
 
 /**
  * Get port from environment and store in Express.
  */
-const port = normalizePort(3000);
+const port = normalizePort(3001);
 app.set('port', port);
 
 
@@ -21,7 +23,10 @@ const server = http.createServer(app);
  */
 server.listen(port, () => {
   console.log('Server is running on Port: ' + port);
+});
 
+server.on('connection', socket => {
+  console.log('Connection Time: ' + moment().tz("Europe/Rome").format('MMMM Do YYYY, h:mm:ss a'));
 });
 
 /**

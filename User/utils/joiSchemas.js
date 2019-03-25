@@ -1,37 +1,40 @@
 const Joi = require('joi');
+const regexp = require('../conf/conf').regexp;
+const moment = require('moment');
+
+const minData = moment().subtract(120, 'years').format('YYYY-MM-DD');
+const maxData = moment().subtract(16, 'years').format('YYYY-MM-DD');
 
 module.exports = {
 
-  /**
+/**
    * User validation schema on signup
    */
-  userSignupSchema: Joi.object().keys({
-    name: Joi.string().regex(/^[A-Za-z\s]+$/).required(),
-    surname: Joi.string().regex(/^[A-Za-z\s]+$/).required(),
-    birth: Joi.date().min('1-1-1894').max('now').required(),
+  userSignup: Joi.object().keys({
+    name: Joi.string().regex(regexp.nameSurname).required(),
+    surname: Joi.string().regex(regexp.nameSurname).required(),
+    birth: Joi.date().min(minData).max(maxData).required(),
     gender: Joi.string().required(),
     email: Joi.string().email().required(),
-    password: Joi.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&._])[A-Za-z\d@$!%?&._]{8,}$/)
+    password: Joi.string().regex(regexp.pwd).required()
   }),
 
   /**
    * User validation schema on update
    */
-  userUpdateSchema: Joi.object().keys({
-    name: Joi.string().regex(/^[A-Za-z\s]+$/),
-    surname: Joi.string().regex(/^[A-Za-z\s]+$/),
-    birth: Joi.date().min('1-1-1894').max('now'),
+  userUpdate: Joi.object().keys({
+    name: Joi.string().regex(regexp.nameSurname),
+    surname: Joi.string().regex(regexp.nameSurname),
+    birth: Joi.date().min(minData).max(maxData),
     gender: Joi.string(),
-    email: Joi.string().email(),
-    password: Joi.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&._])[A-Za-z\d@$!%?&._]{8,}$/)
   }),
 
   /**
    * User validation schema on patch pwd
    */
-  userPatchPassword: Joi.object().keys({
-    oldPassword: Joi.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&._])[A-Za-z\d@$!%?&._]{8,}$/).required(),
-    newPassword: Joi.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&._])[A-Za-z\d@$!%?&._]{8,}$/).required()
+  userPatchPwd: Joi.object().keys({
+    oldPassword: Joi.string().regex(regexp.pwd).required(),
+    newPassword: Joi.string().regex(regexp.pwd).required()
   })
 
 };

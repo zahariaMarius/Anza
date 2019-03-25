@@ -9,7 +9,7 @@ module.exports = {
     return (req, res, next) => {
       const result = Joi.validate(req.body['user'], schema, {abortEarly: false});
       if (result.error) {
-        return res.json({validationError: result.error.details});
+        return res.json({error: result.error.details});
       }
       next();
     }
