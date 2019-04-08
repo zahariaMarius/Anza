@@ -12,12 +12,10 @@ exports.getUserById = async (req, res) => {
   try {
     //search user by _id into DB
     const user = await UserModel.findById(req.params['user_id'], '-active -activationtoken -password -__v');
-    if (!user) {
-      return res.status(404).json({status: 404, message: 'User not found!'});
-    }
+    if (!user) return res.status(404).json({status: 404, message: 'User not found!'});
     res.json({status: 200, message: 'OK', results: {user: user}});
   } catch (e) {
-    console.log(e.message);
+    console.log(e);
     res.status(500).send();
   }
 };
@@ -29,9 +27,7 @@ exports.updateUserById = async (req, res) => {
   try {
     //search user by _id and update it with body params
     const user = await UserModel.findByIdAndUpdate(req.params['user_id'], req.body['user'], {select: '-password -__v', new: true});
-    if (!user) {
-      return res.status(404).json({status: 404, message: 'User not found'});
-    }
+    if (!user) return res.status(404).json({status: 404, message: 'User not found'});
     res.json({status: 200, message: 'User successfully updated', results: user});
   } catch (e) {
     console.log(e.message);
@@ -47,20 +43,16 @@ exports.patchUserPwd = async (req, res) => {
   try {
     //get user by _id
     const user = await UserModel.findById(req.params['user_id']);
-    if (!user) {
-      return res.status(404).json({status: 404, message: 'User not found'});
-    }
+    if (!user) return res.status(404).json({status: 404, message: 'User not found'});
     //compare oldPassword with current password
     const valid = await bcrypt.compare(req.body['user'].oldPassword, user.password);
-    if (!valid) {
-      return res.status(401).json({status: 401, message: 'Current password is wrong'});
-    }
+    if (!valid) return res.status(401).json({status: 401, message: 'Current password is wrong'});
     //upadte user password
     user.password = await bcrypt.hash(req.body['user'].newPassword, 13);
     await user.save();
     res.json({status: 200, message: 'Password successfully changed'});
   } catch (e) {
-    console.log(e.message);
+    console.log(e);
     res.status(500).send();
   }
 };
@@ -69,19 +61,18 @@ exports.patchUserPwd = async (req, res) => {
  * Create new User document and save into MongoDB
  */
 exports.signupUser = async (req, res, next) => {
-  //Create user document from body req
-  const userBody = req.body['user'];
-  const userDoc = new UserModel({
-    _id: new mongoose.Types.ObjectId(),
-    name: userBody.name,
-    surname: userBody.surname,
-    birth: userBody.birth,
-    gender: userBody.gender,
-    email: userBody.email,
-    password: userBody.password
-  });
-
   try {
+    //Create user document from body req
+    const userBody = req.body['user'];
+    const userDoc = new UserModel({
+      _id: new mongoose.Types.ObjectId(),
+      name: userBody.name,
+      surname: userBody.surname,
+      birth: userBody.birth,
+      gender: userBody.gender,
+      email: userBody.email,
+      password: userBody.password
+    });
     //check if user already exist
     const user = await UserModel.findOne({email: userDoc.email});
     //if the user already exist, exit with message
@@ -107,7 +98,7 @@ exports.signupUser = async (req, res, next) => {
       res.status(201).json({status: 201, message: 'User successfully created'});
     }
   } catch (e) {
-    console.log(e.message);
+    console.log(e);
     res.status(500).send();
   }
 };
@@ -120,9 +111,7 @@ exports.activateUser = async (req, res, next) => {
   try {
     const decoded = await jwt.verify(req.params['user_token'], conf.jwtSecret);
     const user = await UserModel.findById(decoded.sub);
-    if (!user) {
-      return res.status(404).json({status: 404, message: 'User not found'});
-    }
+    if (!user) return res.status(404).json({status: 404, message: 'User not found'});
     user.activationtoken = false;
     user.active = true;
     await user.save();
@@ -130,7 +119,7 @@ exports.activateUser = async (req, res, next) => {
     console.log("Message sent: %s", emailInfo.messageId);
     res.json({status: 200, message: 'User account successfully activated'});
   } catch (e) {
-    console.log(e.message);
+    console.log(e);
     res.status(500).send();
   }
 };
@@ -141,15 +130,8 @@ exports.activateUser = async (req, res, next) => {
 exports.refreshActivationToken = async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.params['user_id']);
-    if (!user) {
-      return res.status(404).json({status: 404, message: 'User not found'});
-    }
-    user.activationtoken = await jwt.sign({
-      iss: 'Anza-Server',
-      sub: user._id,
-      iat: new Date().getTime(),
-      exp: new Date().setDate(new Date().getDate() + 1)
-    }, conf.jwtSecret);
+    if (!user) return res.status(404).json({status: 404, message: 'User not found'});
+    user.activationtoken = await jwt.sign({iss: 'Anza-Server', sub: user._id}, conf.jwtSecret, {expiresIn: '2d'});
     await user.save();
     const emailInfo = emailer.transporter.sendMail(emailer.activateEmailOptions(user));
     res.json({status: 200, message: 'User activation token successfully refreshed'});

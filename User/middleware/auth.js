@@ -3,7 +3,6 @@ const axios = require('axios');
 module.exports = async (req, res, next) => {
   try {
     const accessToken = req.headers['authorization'].split(' ')[1];
-
     const axiosRes = await axios({
       baseURL: 'http://localhost:3001/',
       url: '/auth',
@@ -15,11 +14,9 @@ module.exports = async (req, res, next) => {
         port: 3001
       }
     });
-
     next();
-
   } catch (e) {
-    res.status(e.response.status).json({error: e.response.data});
+    res.status(e.response.status).json(e.response.data);
   }
 
 };

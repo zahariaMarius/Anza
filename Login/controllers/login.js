@@ -9,12 +9,7 @@ exports.localLogin = async (req, res, next) => {
     const validPwd = await bcrypt.compare(req.body['user'].password, user.password);
     if (!validPwd) return res.status(401).json({status: 401, message: 'Password is wrong'});
     if (!user.active) return res.status(401).json({status: 401, message: 'User email is not active'});
-    const token = await jwt.sign({
-      iss: 'Anza-Server',
-      sub: user._id,
-      iat: new Date().getTime(),
-      exp: new Date().setDate(new Date().getDate() + 1)
-    }, 'secret');
+    const token = await jwt.sign({iss: 'Anza-Server', sub: user._id}, 'secret', {expiresIn: '1d'});
     res.json({status: 200, message: 'OK', results: {accessToken: token}});
   } catch (e) {
     console.log(e);
